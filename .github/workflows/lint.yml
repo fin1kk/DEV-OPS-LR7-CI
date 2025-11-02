@@ -2,15 +2,27 @@ name: ansible-lint
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   build:
     name: Ansible Lint
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-22.04
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run ansible-lint
-        uses: ansible/ansible-lint@v25.5.0
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install system packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip python3-venv
+    
+    - name: Install ansible and lint
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install ansible ansible-lint
+    
+    - name: Run ansible-lint
+      run: ansible-lint .
